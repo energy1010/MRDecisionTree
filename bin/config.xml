@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+<property>
+<name>
+color
+</name>
+<value>yello</value>
+</property>
+
+<property>
+<name>
+size
+</name>
+<value>10</value>
+</property>
+
+
+<property>
+<name>default.uri</name>
+<value>hdfs://localhost:9000</value>
+</property>
+</configuration>
