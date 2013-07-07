@@ -1,0 +1,71 @@
+<html>
+ <head><title>BookLibrarySystem</title></head>
+ <body>
+ 
+<h1><font color="red">BookLibrarySystem is an example of  Swing application, intended for
+Java programmers who wish to gain rapid experience with practical aspects
+of Swing programming.</font></h1>
+
+<p>Summary of the services provided by BookLibrarySystem :
+<ul>
+<li>Use the frame of Struts, Spring,Hibernate </li>
+<li>Use Access2007 as database</li>
+<li>edit portfolio contents</li>
+<li>filter and sort table rows</li>
+<li>present portfolio totals</li>
+<li>export and import portfolios</li>
+<li>change "theme", which affects the look-and-feel (especially useful for
+low vision users)</li>
+<li>display system information (including object heap size) in the About dialog</li>
+<li>refresh logging configuration file</li>
+<li>set various preferences</li>
+</ul>
+
+Interesting aspects of the implementation of StocksMonitor are discussed
+at <a href="http://www.javapractices.com/home/HomeAction.do#Swing">javapractices.com</a>. 
+Any <a href="http://www.javapractices.com/feedback/FeedbackAction.do?Operation=Show">comments
+or suggestions for improvement</a> are always welcome. All alterations
+will be credited both in this javadoc, and in the <tt>About</tt> dialog,
+if you include your name. These members of the Java community have contributed
+suggestions for the improvement of this application :
+<ul>
+<li>Thomas Zander</li>
+</ul>
+
+<p>This application may be launched using a Java Web Start <a href="../StocksMonitor.jnlp">launch
+point</a>. Clients require the following software :
+<ul>
+<li>JRE 1.5.0 (or better)</li>
+</ul>
+
+Like Swing itself, most classes in this application are not designed for
+multi-threaded environments. Classes which have special status regarding
+threads will include the appropriate documentation.
+
+<p>The implementation uses the following coding style :
+<ul>
+<li>classes are <tt>final</tt> by default ; the only non-<tt>final</tt> classes
+are abstract base classes which are explicitly designed for subclassing</li>
+<li>a naming convention is used to distinguish fields (<tt>fBlah</tt>) and
+arguments (<tt>aBlah</tt>) from local variables (<tt>blah</tt>)</li>
+<li>collections are highly preferred over arrays</li>
+<li>private members are placed last, not first (This allows the exported API,
+which is much more important than the implementation, to appear at the
+top.)</li>
+<li>all objects are non-<tt>null</tt> unless otherwise specified</li>
+<li>classes are package-private by default, and have their scope increased
+to <tt>public</tt> only if necessary</li>
+</ul>
+
+<P>Known Bugs : please see the application's <tt>Help->About</tt> dialog for
+the list of known bugs.
+
+<P>Version History
+<ul>
+ <li>Version 1.5.0 - published July 2008. This version is mostly a port of the application to JDK 1.5.
+ <li>Version 1.0.1 - published May 2003. 
+</ul>
+
+   
+ </body>
+</html>

@@ -1,0 +1,7 @@
+   Target:  color   a    b
+ Y:    G 30 65 
+ Y:	    B 23 15 
+ N:	    G 40 75 
+ N:  B 55 40 
+ Y:	 G 55 100
+ N:	 G 45 60 

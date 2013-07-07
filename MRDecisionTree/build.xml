@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- ====================================================================== 
+	     2013-2-4 上午12:03:16                                                        
+	
+	     project    
+	     description
+	                   
+	     Administrator                                                                
+	     ====================================================================== -->
+	<!-- main可以指定入口target， 默认target可立即执行java入口main函数  -->
+	<project name="wordCount" default="main" basedir=".">
+	<!-- 常用路径配置 -->
+	<property name="src.dir" value="src" />
+<!--	<property name="classes.dir" value="classes" /> -->
+	<property name="build.dir" location="build"/> 
+	<property name="build.classes.dir" location="${build.dir}/classes"/>
+	<property name="lib.dir" value="lib" />
+	<property name="dist.dir" value="dist" />
+	<property name="javadoc.dir" value="javadoc"/>
+	<property name="report.dir" value="report" />
+	<property name="resource.dir" value="resource" />
+	<property name="main-class" value="test.WordCount"/>
+	<property name="user.name" value="Lexus"/>
+	<property name="target" value="1.6"/>
+	<property name="source" value="1.6"/>
+	<property name="project.version" value="1.5.0" />
+	<!--	<property name="manifestMainClass" value="src\MainClassManifest.txt" /> -->
+	<property name="jar.name" value="${ant.project.name}-${project.version}" />
+	<property name="targetJar" value="${jar.name}" />
+	<!--	<property name="javadocApiRoots" value="-link http://java.sun.com/javase/6/docs/api/"/> -->
+	<property name="javac.maxmem" value="1024m"/>
+	<property name="reports.dir" value="reports" />
+	<property name="reports.data.dir" value="${report.dir}/xml"/>
+	<property name="reports.html.dir" value="${report.dir}/html "/>
+	<property name="dist.doc.dir" location="${dist.dir}/doc/"/>
+	<property name="copy.source" value="false" />
+	<property name="archiveRoot" value="${basedir}"/>
+	
+	
+	<!--	  <property file="${user.home}/build.properties" /> 
+	  <property file="${basedir}/build.properties" />   
+	 -->
+		
+	<!-- Application src in src dir , unit test src in test dir
+	compiled src in build/classes dir , compiled unit test src in build/test-classes dir
+	-->	
+	<tstamp>
+	<format property="build.date" pattern="EEEE,d ,MMMM,yyyy"/>
+	<format property="build.time" pattern="yyyy-MM-dd-hh-mm" />
+	</tstamp>		
+		
+	<!-- 第三方库路径 -->
+	<path id="compile.classpath" description="the third party jar in lib">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+			<!--<exclude name="UmlGraph.jar"/> -->
+		</fileset>
+	</path>
+	
+		<!--
+	<path id="compile.classpath" description="the third party jar in lib">
+		<pathelement location="${lib.dir}/*.jar;" />
+	</path>
+ 	-->
+		
+	<!-- 入口 -->
+	<!-- ================================= 
+	      target: main              
+	     ================================= -->
+	<target name="main" depends="run" description="Main target">
+		<!-- 按依赖的target顺序依此执行 -->
+		<echo>Finished Building the .jar file.</echo>
+	</target>
+	
+	<!-- 清除旧版本 -->
+	<!-- ================================= 
+	      target: clean              
+	     ================================= -->
+	<target name="clean" description="Clean">
+		<echo>Clean up Old Files.</echo>
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+		<delete dir="${javadoc.dir}" />
+		<delete dir="${reports.dir}" />
+		<!--
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${javadoc.dir}"/>
+		<mkdir dir="${reports.dir}"/> -->
+	</target>
+	
+	
+	<!-- ================================= 
+	      target: validate  xml             
+	     ================================= -->
+	<target name="validate" depends="clean" description="description">
+		<xmlvalidate failonerror="true" warn="yes">
+			<fileset dir="${basedir}">
+				<include name="**/*.xml"/>
+			</fileset>
+		</xmlvalidate>
+	</target>
+	
+	<!-- ================================= 
+	  target: compile              
+	 ================================= -->
+	<target name="compile" depends="clean"  description="compliation target">
+		<echo>comile source files</echo>
+		<mkdir dir ="${build.dir}"/>
+		<mkdir dir="${build.classes.dir}"/>
+		<javac 
+			verbose="true"
+			debug="true"
+			includeantruntime="yes"
+			srcdir ="${src.dir}" 
+			classpathref="compile.classpath"
+			destdir ="${build.classes.dir}">
+	<!--		<classpath refid="compile.classpath"/> -->
+			<compilerarg line="-encoding UTF-8 "/>
+			<compilerarg value="-Xlint"/>
+			<include name="**/*.java"/>
+			<!-- 解决编译时的编码问题 -->
+			<!--<compilerarg line="-encodingGBK "/>-->
+		</javac>
+	</target>
+	
+	
+	<!-- ================================= 
+	      target: javadoc         
+	     ================================= -->
+	<target name="javadoc" depends="compile" description="create the javadocs of all source files" >
+		<echo>create the javadocs of all source files</echo>
+		<delete dir="${javadoc.dir}" />
+		<mkdir dir="${javadoc.dir}"/>
+		<javadoc 
+	   	access="private"
+	   	destdir="${javadoc.dir}" 
+	   	author="true"
+	   	version="true"
+		sourcepath="${src.dir}"
+	   	use="true"
+	   	linksource="true"
+	   	overview="overview.html"
+	   	windowtitle="${ant.project.name} API"
+	   	failonerror="true">
+			<classpath>
+				<path refid="compile.classpath" />
+				<pathelement path="${build.classes.dir}"/>
+			</classpath>
+			<doctitle>
+				<![CDATA[<h1>${ant.project.name}</h1>]]>
+	   	</doctitle>
+		<bottom>
+			<![CDATA[<i>Copyright &#169; 2013 All Rights Reserved.Made by ${user.name} build time is ${build.time}</i>]]>
+			
+	   	</bottom>
+	<doclet name="org.umlgraph.doclet.UmlGraphDoc" path="lib/UmlGraph.jar">
+		<param name="-inferrel" />
+		<param name="-inferdep" />
+		<param name="-quiet" />
+		<param name="-hide" value="java.*" />
+		<param name="-collpackages" value="java.util.*" />
+		<param name="-qualify" />
+		<param name="-postfixpackage" />
+		<param name="-nodefontsize" value="10" />
+		<param name="-nodefontpackagesize" value="8" />
+		<param name="-attributes" />
+		<param name="-operations" />
+		<param name="-enumerations" />
+		<param name="-enumconstants" />
+		<param name="-visibility" />
+		<param name="-link" value=" http://java.sun.com/javase/6/docs/api/"/>
+	</doclet> 
+	</javadoc>
+	</target>
+	
+	
+	<!-- ================================= 
+	          target: init              
+	         ================================= -->
+	<target name="init"  description="Set timeStamp properties and make direcotries.">
+	<echo>Set timeStamp properties and make direcotries. </echo>
+	<tstamp>
+	<format property="archiveTime" pattern="yyyyMMDD-hh-mm"/>
+	</tstamp>
+	<echo>The time is ${archivTime} </echo>
+	</target>
+	<target name="copysource" depends="init" if="${copy.source}">
+	<copy todir="${classes.dir}" includeemptydirs="true">
+	<fileset dir="${src.dir}" />
+	</copy>
+	</target>
+	<!--
+			<patternset id="image.files" includes="**/*.gif,**/*.jpg,**/*.ico"/>
+			<patternset id="binary.files">
+			<exclude name="**/*.txt"/>
+			<exclude name="**/*.xml"/>
+			<patternset refid="image.files"/>
+			</patternset>
+		-->
+	<property name="resource.files.tocopy"
+			value="**/*.properties,**/*.dtd,**/*.xml,**/*.xsd" />
+	<echo> buildtime = "${build.time}" </echo>
+	<available property="resource.exists"
+			resource="log4j.properties" />
+	
+	<!-- ================================= 
+	          target: jar              
+	         ================================= -->
+	<target name="jar" depends="compile,copysource" description="generate the JAR file">		
+	<copydir dest="${build.classes.dir}/lib" src="${lib.dir}" includes="**/*.jar"></copydir>	
+	<!--<copydir dest="${build.classes.dir}/resource" src="${resource.dir}"></copydir>	 -->
+	<pathconvert  property ="mf.classpath"  pathsep =" ">
+		<mapper>
+			<chainedmapper>
+				<!--  移除绝对路径  -->
+				<flattenmapper  />
+				<!--  第三方库通常放在lib下。理由在↑  -->
+				<globmapper  from ="*"  to ="lib/*"   />
+			</chainedmapper>
+		</mapper>
+		<path refid="compile.classpath">
+			<!--  第三方库的路径  -->
+		</path>
+		</pathconvert>
+	<jar 
+		destfile="${dist.dir}/${targetJar}-${build.time}.jar" 
+		duplicate="preserve"
+		compress="true"  
+				 >
+		<!-- put some dir in jar -->
+	<fileset dir="${build.classes.dir}" />
+	<fileset dir="${src.dir}" includes="**/*.properties,**/*.dtd,**/*.xml,**/*.xsd"
+				excludes="**/*.java" />
+	<!--<fileset dir="${lib.dir}" includes="**/*.jar"/> 
+	<fileset dir="${resource.dir}" /> -->   <!--  不能复制文件夹，只能复制文件夹下的所有文件 --> 
+	<manifest>
+		<attribute name="Built-By" value="${user.name}" />
+		<attribute name="Built-Time" value="${build.time}" />
+		<attribute name="Created-By" value="${user.name}" />
+		<attribute name="Class-Path" value="${mf.classpath}"/>
+		<attribute name="Main-Class" value="${main-class}"/>
+		<attribute name="Sealed" value="true"/>
+		<attribute name="Implementation-Version" value="${project.version}"/>
+	</manifest>
+	</jar>
+		<delete dir="${build.classes.dir}/lib"></delete>
+		<delete dir="${build.classes.dir}/resource"></delete>
+	</target>
+	
+	<!-- ================================= 
+	          target: archive              
+	         ================================= -->
+	<target name="archive" depends="init,clean,jar" description="copy clean project tree to archive area.">
+	<echo message="Copy project tree into archive area.">
+	</echo>
+	<mkdir dir="${archiveRoot}\${archiveTime}" />
+	<copy dir="${archiveRoot}\${archiveTime}" >
+	<fileset dir=".">
+	</fileset>
+	</copy>
+	</target>
+	
+	<path id="target.jar">
+	<fileset dir="${dist.dir}">
+	<include name="*.jar"/>
+	</fileset>
+	</path>
+	
+	<path id="run.classpath">
+	<path refid="compile.classpath" />
+	<path refid="target.jar"/>
+	</path>
+	
+	<!-- ================================= 
+	          target: run              
+         ================================= -->
+	<!-- run -->
+	<target name="run" depends="compile,jar" description="Run target">
+	<echo>run the main class</echo>
+	<echo>running with classpath ${toString:run.classpath}</echo>
+	<java classname ="${main-class}" classpathref="run.classpath"
+		fork="true"
+		failonerror="true" 
+	>
+		<!--	Setting environment variables -->
+	<!-- java   -->
+	<!--<env key="JAVA_HOME" value="${user.home}/JDK" />-->
+	<env key="PATH" path="${dist.dir};${env.PATH}"/>
+	<env key="Path" path="${dist.dir};${env.Path}"/>
+	</java>
+	</target>
+	
+	<!--For this to work, the manifest must be set up correctly.-->
+<!--	<target name="run1" depends="jar" description="Run target as jar">
+	<echo>running with jar  : "${targetJar}-${build.time}.jar"</echo>
+	<echo>running with classpath ${toString:run.classpath}</echo>
+	<java
+			jar="${dist.dir}/${targetJar}-${build.time}.jar"
+			fork="true"
+			classpathref="run.classpath"
+			failonerror="true">
+	</java>
+	</target>
+	-->
+	<!--	<condition property="all.dependencies.present">
+			<available classname="junit.framework.TestCase" />
+			</condition>
+			<fail message="Missing dependencies"
+			unless="all.dependencies.present"/>
+			-->
+		
+	<path id="test.compile.classpath" description="the test classes compile classpath">
+	<path refid="compile.classpath">
+	</path>
+	<pathelement location="${classes.dir}"/>
+	</path>
+	
+	
+	<path id="test.run.classpath" description="the test classes run classpath">
+	<path refid="test.compile.classpath" />
+	<pathelement location="${test.classes.dir}"/>
+	</path>
+	
+	
+	<!-- ================================= 
+	          target: test-init              
+         ================================= -->
+	<target name="test-init"  description="description">
+	<delete dir="${test.classes.dir}">
+	</delete>
+	<delete dir="${reports.dir}">
+	</delete>
+	<mkdir dir="${test.classes.dir}"/>
+	<mkdir dir="${reports.dir}"/>
+	</target>
+	
+	
+	<!-- ================================= 
+	          target: test-compile              
+	         ================================= -->
+	<target name="test-compile" depends="test-init,compile" description="test compile">
+	<echo>test compile </echo>
+	<javac 
+		verbose="true"
+		debug="true"
+		includeantruntime="yes"
+		failonerror="true"
+		srcdir ="${test.src.dir}" 
+		destdir ="${test.classes.dir}">
+	<classpath refid="test.compile.classpath"/>
+	<compilerarg line="-encoding UTF-8 "/> <!-- solve compile problem-->
+	<compilerarg value="-Xlint"/>	
+	<include name="**/*.java"/>
+	
+	</javac>
+	</target>
+	
+		
+		
+	<!-- ================================= 
+          target: junit-test              
+         ================================= -->
+    <target name="junit-test" depends="test-compile" description="Run unit tests">
+        <junit 
+        	printsummary="true" 
+        	haltonfailure="true">
+         <classpath refid="test.run.classpath"></classpath>
+        	<formatter type="plain" usefile="false"/>
+        	<formatter type="xml"  />
+        	<batchtest todir="${reports.data.dir}">
+        	<fileset dir="${test.classes.dir}" casesensitive="false" includes="**/*Test.class"> 
+        	</fileset>
+        	</batchtest>
+        <test name="com.**.test"></test>
+        </junit>
+    </target>
+		
+		
+		<!-- ================================= 
+          target: test.report              
+         ================================= -->
+    <target name="test.report" depends="junit-test" description="Generate HTML unit test reports">
+        <junitreport todir="${reports.data.dir}">
+        <fileset dir="${reports.data.dir}"> 
+        <include name="Test-*.xml"/>
+        </fileset>
+        	<report format="frames" todir="${reports.html.dir}"/>
+        </junitreport>
+    </target>
+
+	
+	<!-- ================================= 
+	          target: test              
+	         ================================= -->
+	<!--    <target name="test" depends="compile" description="description">
+	    	<delete dir="${junitreports}"/>
+	   		<mkdir dir="${junitreports}"/>
+	        <junit printsummary="yes" haltonfailure="no">
+	    	<classpath refid="classpath" />
+			<formatter type="xml" />
+	    	<batchtest fork="yes" todir="${junitreports}">
+	        <fileset dir="${test}">
+	        	<include name="**/*test*.java"/>
+	        </fileset>
+	    	</batchtest>
+	        </junit>
+	    </target>
+	-->
+	
+	<!-- ================================= 
+	          target: help              
+         ================================= -->
+	<target name="help" depends="compile" description="description">
+	<exec executable="cmd">
+	<arg value="/c"/>
+	<arg value="ant.bat"/>
+	<arg value="-p" />
+	</exec>
+	</target>
+	
+	
+	
+	<!-- ================================= 
+			          target: exec              
+         ================================= -->
+	<target name="exec" description="Executing shell commands">
+	<condition property="is.unix">
+	<os family="unix" />
+	</condition>
+	<condition property="is.nt">
+	<os family="winnt" />
+	</condition>
+	<condition property="is.mac">
+	<os family="mac" />
+	</condition>
+	<echo>
+		    	os.name=${os.name}
+		    	os.arch=${os.arch}
+		    	os.version=${os.version}
+		    	is.unix=${is.unix}
+		    	is.winnt=${is.winnt}
+		    	is.mac=${is.mac}
+		    		</echo>
+	<exec executable="cmd"
+    	failonerror="true"
+			        	>
+	<arg value="/c"/>
+	<arg value="ant.bat"/>
+	<arg value="-p" />
+	</exec>
+	</target>
+	
+		<!--
+			<exec executable="preprocess*.exe"  dir="" description="" 
+			newenvironment="true" >
+			<env key="PATH" path="${dist.dir};${env.PATH}"/>
+			<env key="Path" path="${dist.dir};${env.Path}"/>
+			<env key="USER" value="self"/>
+				<arg value="/c"/>
+				<arg value="/c"/>
+			</exec>
+	-->
+	
+	<property name="server.name" value="value"/>
+	<property name="ftp.username" value="value"/>
+	<property name="ftp.password" value="value"/>
+		
+	<!-- ================================= 
+	          target: deploy              
+         ================================= -->
+	<target name="deploy" depends="jar" description="description">
+	<ftp userid="${ftp.username}" password="${ftp.password}" server="${server.name}">
+	<fileset dir="dist" id="id">
+	</fileset>
+	</ftp>
+	</target>
+	
+	<!-- ================================= 
+          target: doxygen              
+         ================================= -->
+    <target name="doxygen" depends="javadoc" description="description">
+    	
+       <property file="${user.home}/ant-global.properties" />
+    	<property name="doxygen.ant.home" value="${user.home}/.doxygen-ant"/>
+    	<property name="doxygen.ant.version" value="1.6.1"/>
+
+    	<echo>Installing the Doxygen Ant task into ${doxygen.ant.home}</echo>
+    	<property name="sourceforege.mirror" value="http://sourceforge.net/projects/ant-doxygen/files/"/>
+    	
+    	<available file="${doxygen.ant.home}/ant-doxygen-bin-${doxygen.ant.version}.tgz" property="doxygen.ant.installed" />
+
+    	<echo>Bootstrap Doxygen </echo>
+    	<echo>Installing Doxygen task</echo>
+    	<get dest="${doxygen.ant.home}/ant-doxygen-bin-${doxygen.ant.version}" src="${sourceforege.mirror}/ant-doxygen-bin-${doxygen.ant.version}.tgz" usetimestamp="true" />
+    	
+    	<gunzip src="${doxygen.ant.home}/ant-doxygen-bin-${doxygen.ant.version}.tgz" 
+    		dest="${doxygen.ant.home}/ant-doxygen-bin-${doxygen.ant.version}" />
+    	<untar src="${doxygen.ant.home}/ant-doxygen-bin-${doxygen.ant.version}.tar"
+    		dest="${doxygen.ant.home}/ant-doxygen-bin-${doxygen.ant.version}"></untar>
+    	
+    	<move todir="${doxygen.ant.home}">
+    	<fileset dir="${doxygen.ant.home}/ant-doxygen-bin-${doxygen.ant.version}">
+    	<include name="**/*"/>
+    	</fileset>
+    	</move>
+
+    <delete dir="${doxygen.ant.home}/ant-doxygen-bin-${doxygen.ant.version}" />
+    <ant antfile="bootstrap-doxygen.xml" />
+    
+    </target>
+
+		
+		
+	 <target name="documentation">
+	    <taskdef name="doxygen"
+	             classname="org.doxygen.tools.DoxygenTask"
+	             classpath="lib/doxygen_ant.jar" />
+	 	 <doxygen configFilename="src/config/doxyfile.conf" />
+	<!--    <doxygen>
+	    	<property name="name" value="value"/>
+	    	</doxygen>
+	    	-->
+	 	
+	   </target>
+	
+	
+</project>
